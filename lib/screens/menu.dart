@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:football_news/widgets/left_drawer.dart';
+import 'package:football_news/screens/newslist_form.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
   // Student info
-  final String nama = "Muhammad RIfqi AL Ghani";      // Name
-  final String npm = "2406365396";       // NPM
-  final String kelas = "KKI";            // Class
+  final String nama  = "Muhammad RIfqi AL Ghani";
+  final String npm   = "2406365396";
+  final String kelas = "KKI";
 
-  // Menu items for the grid
   final List<ItemHomepage> items = const [
     ItemHomepage("See Football News", Icons.newspaper),
-    ItemHomepage("Add News", Icons.add),
+    ItemHomepage("Add News", Icons.add),  
     ItemHomepage("Logout", Icons.logout),
   ];
 
@@ -28,6 +29,7 @@ class MyHomePage extends StatelessWidget {
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
+      drawer: const LeftDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -37,9 +39,9 @@ class MyHomePage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                InfoCard(title: 'NPM', content: npm),
+                InfoCard(title: 'NPM',  content: npm),
                 InfoCard(title: 'Name', content: nama),
-                InfoCard(title: 'Class', content: kelas),
+                InfoCard(title: 'Class',content: kelas),
               ],
             ),
 
@@ -53,14 +55,13 @@ class MyHomePage extends StatelessWidget {
                     const Padding(
                       padding: EdgeInsets.only(top: 16.0),
                       child: Text(
-                        'Selamat datang di Football News',
+                        'Welcome to Football News',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 16.0),
 
                     // Grid of the menu buttons
@@ -87,10 +88,8 @@ class MyHomePage extends StatelessWidget {
     );
   }
 }
-// This is an indedntation hell
 
 // ---------- ItemCard widget ----------
-// A clickable card with an icon and a label.
 class ItemCard extends StatelessWidget {
   final ItemHomepage item;
 
@@ -99,19 +98,26 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      // Use theme's secondary color for the card background.
       color: Theme.of(context).colorScheme.secondary,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: () {
-          // Show a SnackBar when tapped
+          // SnackBar
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
-              SnackBar(
-                content: Text("Kamu telah menekan tombol ${item.name}!"),
-              ),
+              SnackBar(content: Text("You pressed the ${item.name} button!")),
             );
+
+          // Navigate based on EN label
+          if (item.name == "Add News") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const NewsFormPage()),
+            );
+          }
+          // else if (item.name == "See Football News") { /* navigate to list page */ }
+          // else if (item.name == "Logout") { /* handle logout */ }
         },
         child: Container(
           padding: const EdgeInsets.all(8),
@@ -119,11 +125,7 @@ class ItemCard extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  item.icon,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
+                Icon(item.icon, color: Colors.white, size: 30.0),
                 const SizedBox(height: 8),
                 Text(
                   item.name,
@@ -140,7 +142,6 @@ class ItemCard extends StatelessWidget {
 }
 
 // ---------- InfoCard widget ----------
-// Small card showing one piece of profile info (NPM, Name, Class).
 class InfoCard extends StatelessWidget {
   final String title;
   final String content;
@@ -160,10 +161,7 @@ class InfoCard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8.0),
             Text(content),
           ],
@@ -172,7 +170,6 @@ class InfoCard extends StatelessWidget {
     );
   }
 }
-
 
 class ItemHomepage {
   final String name;
