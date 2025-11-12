@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:football_news/widgets/left_drawer.dart';
 import 'package:football_news/screens/newslist_form.dart';
+import 'package:football_news/screens/news_entry_list.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -115,8 +116,12 @@ class ItemCard extends StatelessWidget {
               context,
               MaterialPageRoute(builder: (_) => const NewsFormPage()),
             );
+          } else if (item.name == "See Football News") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const NewsEntryListPage()),
+            );
           }
-          // else if (item.name == "See Football News") { /* navigate to list page */ }
           // else if (item.name == "Logout") { /* handle logout */ }
         },
         child: Container(
