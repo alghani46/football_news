@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:football_news/widgets/left_drawer.dart';
 import 'package:football_news/screens/newslist_form.dart';
 import 'package:football_news/screens/news_entry_list.dart';
+import 'package:football_news/login.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+
+// Match your Django server location (same convention used elsewhere)
+const String baseUrl = 'http://localhost:8000';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -102,8 +108,36 @@ class ItemCard extends StatelessWidget {
       color: Theme.of(context).colorScheme.secondary,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap: () {
-          // SnackBar
+        onTap: () async {
+          // Special-case Logout so it doesn't show the generic message
+          if (item.name == "Logout") {
+            // Acquire CookieRequest from Provider
+            final request = context.read<CookieRequest>();
+            try {
+              final response = await request.logout("$baseUrl/auth/logout/");
+              print('Logout response: $response');
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Logged out successfully!')),
+                );
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                  (route) => false,
+                );
+              }
+            } catch (e) {
+              print('Logout error: $e');
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error logging out: $e')),
+                );
+              }
+            }
+            return;
+          }
+
+          // Non-logout actions show the generic SnackBar and navigate
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
@@ -122,7 +156,6 @@ class ItemCard extends StatelessWidget {
               MaterialPageRoute(builder: (_) => const NewsEntryListPage()),
             );
           }
-          // else if (item.name == "Logout") { /* handle logout */ }
         },
         child: Container(
           padding: const EdgeInsets.all(8),

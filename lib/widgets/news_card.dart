@@ -24,7 +24,39 @@ class NewsItem extends StatelessWidget {
     return InkWell(
       // 2) Make onTap async so we can await logout()
       onTap: () async {
-        // Navigation / actions
+        // Special-case Logout so it doesn't show the generic message
+        if (name == "Logout") {
+          try {
+            final response = await request.logout("$baseUrl/auth/logout/");
+            print('Logout response: $response');
+
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Logged out successfully!"),
+                ),
+              );
+
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+                (route) => false,
+              );
+            }
+          } catch (e) {
+            print('Logout error: $e');
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Error logging out: $e"),
+                ),
+              );
+            }
+          }
+          return;
+        }
+
+        // Navigation / actions for non-logout items
         if (name == "Add News" || name == "Tambah Berita") {
           // Show SnackBar for Add News
           ScaffoldMessenger.of(context)
@@ -49,38 +81,6 @@ class NewsItem extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (_) => const NewsEntryListPage()),
           );
-        } else if (name == "Logout") {
-          // Handle logout WITHOUT showing the generic notification
-          try {
-            final response = await request.logout(
-                "$baseUrl/auth/logout/");
-            print('Logout response: $response');
-            
-            if (context.mounted) {
-              // Show success message
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Logged out successfully!"),
-                ),
-              );
-              
-              // Navigate back to login page and clear the stack
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-                (route) => false, // Remove all routes
-              );
-            }
-          } catch (e) {
-            print('Logout error: $e');
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Error logging out: $e"),
-                ),
-              );
-            }
-          }
         }
       },
       child: Card(
